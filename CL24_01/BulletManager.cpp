@@ -1,7 +1,8 @@
 #include "BulletManager.h"
 #include <vector>
+#include <cmath>
 
-BulletManager::BulletManager(GameScene* gamescene ,std::vector<std::unique_ptr<Enemy>>& enemies, Player*& player, TextureManager* texturemanager)
+BulletManager::BulletManager(GameScene* gamescene, std::vector<std::unique_ptr<Enemy>>& enemies, Player*& player, TextureManager* texturemanager)
 	: gamescene(gamescene), enemies(enemies), player(player), textureManager(texturemanager) {
 
 }
@@ -20,7 +21,7 @@ void BulletManager::Update() {
 		(*bulletIt)->Update();
 
 		bool hit = false;
-		
+
 		for (auto& e_obj : enemies) {
 			if ((*bulletIt)->CheckCollision(e_obj->GetPos(), e_obj->GetRadius())) {
 				hit = true;
@@ -77,12 +78,50 @@ void BulletManager::ShootBullet() {
 	bullet.back()->SetPos(t_pos.x, t_pos.y + 50.0f, t_pos.z);
 }
 
-void BulletManager::EnemyShootBullet(DirectX::XMFLOAT3 t_pos) {
-	// ’e‚Ì¶¬
-	enemybullet.emplace_back(std::make_unique<Bullet>(1));
-	// ’e‚Ì‰Šú‰»
-	enemybullet.back()->Init(textureManager, L"asset/enemybullet.png");
-	enemybullet.back()->SetPos(t_pos.x, t_pos.y - 0.5f, t_pos.z);
+void BulletManager::EnemyShootBullet(Enemy* enemy) {
+	DirectX::XMFLOAT3 t_pos = enemy->GetPos();
+
+	switch (enemy->GetEnemyType()) {
+	case 0:
+		// ’e‚Ì¶¬
+		enemybullet.emplace_back(std::make_unique<Bullet>(1));
+		// ’e‚Ì‰Šú‰»
+		enemybullet.back()->Init(textureManager, L"asset/enemybullet.png");
+		enemybullet.back()->SetPos(t_pos.x, t_pos.y - 0.5f, t_pos.z);
+		break;
+	case 1:
+		int numBullets = 5; // ’e‚Ì”
+		float radius = 10.0f; // ‰~‚Ì”¼Œa
+		const float pi = 3.14159265358979323846f;
+
+		for (int i = 0; i < numBullets; ++i) {
+			float angle = i * 2.0f * pi / numBullets; // “™ŠÔŠu‚ÌŠp“x‚ğŒvZ
+
+			// is•ûŒüiunit vectorj‚Æ‚µ‚ÄA‰ñ“]‚ÉŠî‚Ã‚­•ûŒü‚ğŒvZ
+			float directionX = std::cos(angle); // x•ûŒü‚Ìis•ûŒü
+			float directionY = std::sin(angle); // y•ûŒü‚Ìis•ûŒü
+
+			// ’e‚ğ¶¬
+			enemybullet.emplace_back(std::make_unique<Bullet>(2));
+
+			// ’e‚Ì‰Šú‰»
+			enemybullet.back()->Init(textureManager, L"asset/enemybullet.png");
+
+			// ’e‚Ìis•ûŒüƒxƒNƒgƒ‹i•ûŒü‚¾‚¯İ’èj
+			enemybullet.back()->SetDirection(DirectX::SimpleMath::Vector3(directionX, directionY, 0.0f));
+
+			// ‰Šú‰ñ“]•ûŒü‚ğİ’è
+			enemybullet.back()->SetRotationOffset(angle); // ‰Šú‰ñ“]Šp“x
+
+			// ’e‚ÌˆÊ’u‚ğ’†S‚©‚ç•úË‚³‚ê‚é‚æ‚¤‚Éİ’è
+			enemybullet.back()->SetPos(t_pos.x + radius * directionX, t_pos.y + radius * directionY, t_pos.z);
+
+			// ’e‚ÌˆÊ’u‚ğ’†S‚©‚ç•úË‚³‚ê‚é‚æ‚¤‚Éİ’è
+			enemybullet.back()->SetTargetPos(t_pos);
+		}
+
+		break;
+	}
 }
 
 // ’e‚ª”ÍˆÍŠO‚És‚­‚Æíœ

@@ -44,7 +44,7 @@ public:
     void Update() override;
     void Draw() override;
 
-    void SpawnEnemy(float posX, float posY, int type);
+    void SpawnEnemy(int type);
     void AddEnemy(const std::wstring& baseTexturePath, int enemyType);
     void RemoveEnemy(Enemy* enemy);
     void TakeDamege();

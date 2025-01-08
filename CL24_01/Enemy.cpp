@@ -6,12 +6,19 @@ Enemy::Enemy(int enemyType) : enemyType(enemyType) {
 	targetPos.x = rand() % MAP_WIDTH - (MAP_WIDTH / 2);
 	switch (enemyType) {
 	case 0:
+		pos.x = rand() % MAP_WIDTH - (MAP_WIDTH / 2);  // -470 ～ 390の範囲でX位置をランダム生成
+		pos.y = (MAP_HEIGHT / 2);
+		 
 		targetPos.y = rand() % (MAP_HEIGHT / 2) - 10.0f;
 		moveSpeed = 2.0f;
+		shootCooltime = 100;
 		break;
 	case 1:
-		moveSpeed = 1.0f;
+		pos.x = rand() % MAP_WIDTH - (MAP_WIDTH / 2);  // -470 ～ 390の範囲でX位置をランダム生成
+		pos.y = -500.0f;
+		moveSpeed = 1.25f;
 		state = 1;
+		shootCooltime = 300;
 		break;
 	}
 }

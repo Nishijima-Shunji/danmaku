@@ -12,7 +12,7 @@ Player::Player() {
 
 
 	// プレイヤーのHP
-	health = 21;
+	health = 1;
 	deadFlg = false;
 }
 
@@ -28,6 +28,7 @@ void Player::Update(Input input) {
 void Player::move(Input input) {
 	// 移動中フラグ
 	bool moveFlg = false;
+	DirectX::SimpleMath::Vector3 oldPos = pos;
 
 	if (movementType == 0) {
 		// キャラクター移動
@@ -55,10 +56,14 @@ void Player::move(Input input) {
 			velocity = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 		}
 	}
-
 	// 座標更新
 	pos += velocity;
 
+	// 範囲外なら元に戻す（移動出来ない）
+	if (pos.x > MAP_WIDTH / 2 || pos.x < -(MAP_WIDTH / 2) ||
+		pos.y > MAP_HEIGHT / 2 || pos.y < -(MAP_HEIGHT / 2)) {
+		pos = oldPos;
+	}
 }
 
 void Player::Intro() {

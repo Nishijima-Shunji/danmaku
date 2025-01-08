@@ -64,19 +64,19 @@ void GameScene::Update() {
 		// ========敵生成========
 		spawnTimer += 1.0f / 60.0f;
 		// 特定の時間の時だけ特殊な敵を生成
-		if (elapsed.count() == 100) {
+		if (elapsed.count() > 30000) {
 			enemyType = 1;
+			start = now; // タイマーをリセット（基準時間を更新）
 		}
 		if (spawnTimer >= rand() % 5 + 1) {
 			spawnTimer = 0.0f;
-			float spawnX, spawnY;
-			spawnX = rand() % MAP_WIDTH - (MAP_WIDTH / 2);  // -470 ～ 390の範囲でX位置をランダム生成
-			spawnY = (MAP_HEIGHT / 2);
-			SpawnEnemy(spawnX, spawnY, enemyType);
-			//生成した敵の種類がノーマルでないなら
-			if (enemyType != 0) {
-				// 敵の種類をノーマルに設定
-				enemyType = 0;
+			if (enemies.size() < 30) {
+				SpawnEnemy(enemyType);
+				//生成した敵の種類がノーマルでないなら
+				if (enemyType != 0) {
+					// 敵の種類をノーマルに設定
+					enemyType = 0;
+				}
 			}
 		}
 
@@ -93,16 +93,7 @@ void GameScene::Update() {
 			enemy->Update();
 			int state = enemy->GetState();
 			if (state == 1 && enemy->CanShoot()) {
-				// プレイヤーの座標に生成
-				DirectX::XMFLOAT3 t_pos = enemy->GetPos();
-				//弾の発射方法をエネミータイプによって
-				switch (enemy->GetEnemyType()) {
-				case 0:
-					bulletManager->EnemyShootBullet(t_pos);
-					break;
-				case 1:
-					break;
-				}
+				bulletManager->EnemyShootBullet(enemy.get());
 				enemy->ResetCoolTime();
 			}
 		}
@@ -141,13 +132,13 @@ void GameScene::Draw() {
 	bg->Draw();
 }
 
-void GameScene::SpawnEnemy(float posX, float posY, int type) {
+void GameScene::SpawnEnemy(int type) {
 	// 敵の生成
 	enemies.emplace_back(std::make_unique<Enemy>(type));
 	// 敵の初期化
-	AddEnemy(L"asset/enemy",type);
+	AddEnemy(L"asset/enemy", type);
 	// 指定の座標に生成
-	enemies.back()->SetPos(posX, posY, 0.0f);
+	//enemies.back()->SetPos(posX, posY, 0.0f);
 	enemies.back()->SetSize(enemies.back()->GetRadius() * 2, enemies.back()->GetRadius() * 2, 0.0f);
 }
 

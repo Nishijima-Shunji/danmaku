@@ -3,6 +3,9 @@
 #include "Input.h"
 #include "Bullet.h"
 
+#define MAP_WIDTH (560)	// ウインドウの幅
+#define MAP_HEIGHT (720)	// ウインドウの高さ
+
 class Player : public Object {
 private:
 	int movementType = 0;	// 移動方法　0:すぐに止まる　1:滑る
