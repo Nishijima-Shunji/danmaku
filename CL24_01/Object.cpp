@@ -6,7 +6,14 @@ Object::~Object() {
 }
 
 
-void Object::Init(TextureManager* textureManager, const wchar_t* imgname) {
+void Object::Init(TextureManager* textureManager, const wchar_t* imgname, int splitx, int splity) {
+	splitX = splitx;
+	splitY = splity;
+	vertexList[1].u = 1.0f / splitX;
+	vertexList[2].v = 1.0f / splitY;
+	vertexList[3].u = 1.0f / splitX;
+	vertexList[4].v = 1.0f / splitY;
+
 	// 頂点バッファを作成する
 	D3D11_BUFFER_DESC bufferDesc;
 	bufferDesc.ByteWidth = sizeof(vertexList);
@@ -22,6 +29,7 @@ void Object::Init(TextureManager* textureManager, const wchar_t* imgname) {
 	subResourceData.SysMemSlicePitch = 0;
 
 	HRESULT hr = g_pDevice->CreateBuffer(&bufferDesc, &subResourceData, &m_pVertexBuffer);
+
 
 	//テクスチャをセット
 	SetTexture(textureManager, imgname);
@@ -126,4 +134,9 @@ void Object::SetTexture(TextureManager* textureManager, const wchar_t* imgname) 
 		MessageBoxA(NULL, "テクスチャ読み込み失敗", "エラー", MB_ICONERROR | MB_OK);
 		return;
 	}
+}
+
+void Object::SetUV(int u, int v) {
+	numU = u;
+	numV = v;
 }

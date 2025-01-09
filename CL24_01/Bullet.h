@@ -11,7 +11,7 @@ private:
 
 	float angleOffset = 0.0f;
 	float expansionSpeed = 1.0f; // ”¼Œa‚ÌL‚ª‚è‘¬“x
-	float rotationSpeed = 0.01f; // ‰ñ“]‚Ì‘¬“x
+	float rotationSpeed = 0.03f; // ‰ñ“]‚Ì‘¬“x
 	float rotationOffset;
 	float initRadius;
 	float radius = 10.0f;		// ‰~‚Ì”¼Œa

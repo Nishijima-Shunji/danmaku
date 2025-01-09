@@ -52,7 +52,7 @@ public:
 	float numU = 0;
 	float numV = 0;
 
-	virtual void Init(TextureManager* textureManager, const wchar_t* imgname);
+	virtual void Init(TextureManager* textureManager, const wchar_t* imgname, int splitX = 1, int splitY = 1);
 	virtual void Draw();
 	virtual void Uninit();
 
@@ -62,5 +62,7 @@ public:
 	virtual void SetColor(float r, float g, float b, float a);	//色をセット
 
 	virtual void SetTexture(TextureManager* textureManager, const wchar_t* imgname);
+	virtual void SetUV(int u, int v);
+
 };
 

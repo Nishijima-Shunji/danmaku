@@ -20,8 +20,11 @@ private:
 
     Player* player;         // プレイヤー
     Object* bg;             // 背景
+    Object* score_bg;       // スコア
+    std::vector<std::unique_ptr<Object>> scoreNum;
 
     int state = 0;
+    int score = 0;
    
     std::vector<std::unique_ptr<Object>> health;        // 体力のリスト
     //std::vector<Bullet*> bullet;    // 弾のリスト
@@ -36,9 +39,7 @@ private:
 
 
 public:
-
-
-    GameScene();
+    GameScene(int maxhp);
     ~GameScene();
 
     void Update() override;
@@ -50,7 +51,6 @@ public:
     void TakeDamege();
 
     void Intro();
-
-    Player* GetPlayer();
+    void Outro();
 };
 

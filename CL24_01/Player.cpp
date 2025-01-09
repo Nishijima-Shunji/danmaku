@@ -1,7 +1,13 @@
 #include "Player.h"
 
 // ステータスの初期設定
-Player::Player() {
+Player::Player(int maxhp) {
+	// 1/100の確率でキャラ滑る
+	if ((rand() % 1000) == 0)
+	{
+		movementType = 1;
+	}
+
 	// プレイヤーの移動速度
 	if (movementType == 0) {
 		moveSpeed = 3.0f;
@@ -10,9 +16,8 @@ Player::Player() {
 		moveSpeed = 0.1f;
 	}
 
-
 	// プレイヤーのHP
-	health = 1;
+	health = maxhp;
 	deadFlg = false;
 }
 
@@ -73,6 +78,14 @@ void Player::Intro() {
 	}
 }
 
+void Player::Outro() {
+	const float gravity = 0.98f;
+	if (pos.y > -400.0f) {
+		velocity.y -= gravity;
+		pos += velocity;
+	}
+}
+
 float Player::GetRadius() const {
 	return radius;
 }
@@ -87,4 +100,8 @@ bool Player::GetdeadFlg() const {
 
 int Player::GetHealth() const {
 	return health;
+}
+
+void Player::SetVelocity(DirectX::SimpleMath::Vector3 velo) {
+	velocity = velo;
 }

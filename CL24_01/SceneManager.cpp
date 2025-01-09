@@ -6,7 +6,7 @@
 
 BaseScene* SceneManager::m_pScene = nullptr; // nullptr で初期化
 
-void SceneManager::ChangeScene(SCENE scene) {
+void SceneManager::ChangeScene(SCENE scene , int score) {
     if (m_pScene != nullptr) {
         delete m_pScene;
     }
@@ -16,10 +16,10 @@ void SceneManager::ChangeScene(SCENE scene) {
         m_pScene = new TitleScene(); // タイトルシーンを設定
         break;
     case SCENE::GAME:
-        m_pScene = new GameScene();  // ゲームシーンを設定
+        m_pScene = new GameScene(score);  // ゲームシーンを設定
         break;
     case SCENE::RESULT:
-        m_pScene = new ResultScene(); // リザルトシーンを設定
+        m_pScene = new ResultScene(score); // リザルトシーンを設定
         break;
     default:
         break;

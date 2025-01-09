@@ -17,16 +17,17 @@ private:
 	DirectX::SimpleMath::Vector3 velocity = { 0.0f,0.0f,0.0f };
 
 public:
-	Player();  // コンストラクタ
+	Player(int maxhp);  // コンストラクタ
 	void Update(Input input);  // プレイヤーの更新
 	void move(Input input);
 	void Intro();
+	void Outro();
 
 	float GetRadius() const;
 	void DecreaseHealth(int);
 	bool GetdeadFlg() const;
 	int GetHealth() const;
 
-
+	void SetVelocity(DirectX::SimpleMath::Vector3 velo);
 };
 

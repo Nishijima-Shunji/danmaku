@@ -8,11 +8,11 @@
 
 std::chrono::high_resolution_clock::time_point start;
 
-GameScene::GameScene() {
+GameScene::GameScene(int maxhp){
 	textureManager = new TextureManager(g_pDevice);
 
 	// プレイヤーの生成
-	player = new Player;
+	player = new Player(maxhp);
 	player->Init(textureManager, L"asset/player.png");
 	player->SetPos(0.0f, -500.0f, 0.0f);
 	player->SetSize(40.0f, 40.0f, 0.0f);
@@ -24,6 +24,21 @@ GameScene::GameScene() {
 	bg->SetSize(560.0f, 720.0f, 0.0f);
 	bg->SetColor(1.0f, 0.0f, 0.0f, 0.0f);
 
+	// スコア背景の生成
+	score_bg = new Object;
+	score_bg->Init(textureManager, L"asset/score_bg.png");
+	score_bg->SetPos(-250.0f, -300.0f, 0.0f);
+	score_bg->SetSize(50.0f, 50.0f, 0.0f);
+
+	for (int i = 0; i < 5; i++) {
+		// UIの生成
+		scoreNum.emplace_back(std::make_unique<Object>());
+		scoreNum.back()->Init(textureManager, L"asset/num.png", 10, 1);
+		scoreNum.back()->SetPos((i * 25.0f) - 215.0f, -300.0f, 0.0f);
+		scoreNum.back()->SetSize(25.0f, 25.0f, 0.0f);
+		scoreNum.back()->SetUV(0, 0);
+	}
+
 	bulletManager = new BulletManager(this, enemies, player, textureManager);
 }
 
@@ -33,11 +48,19 @@ GameScene::~GameScene() {
 	delete bulletManager;
 	delete player;
 	delete bg;
+	delete score_bg;
 }
 
 // 更新
 void GameScene::Update() {
 	input.Update();
+
+	// ダメージエフェクトを赤から徐々に透明に戻す
+	if (bg->GetColor().w != 0.0f) {
+		bg->SetColor(1.0f, 0.0f, 0.0f, bg->GetColor().w - 0.01f);
+	}
+
+
 	//=====================イントロアニメーション=====================
 	if (state == 0) {
 		Intro();
@@ -48,9 +71,14 @@ void GameScene::Update() {
 		auto now = std::chrono::high_resolution_clock::now();
 		// 経過時間を計算
 		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start);
+
+
 		// ========弾発射========
 		if (input.GetKeyPress(VK_SPACE)) {
 			if (shootcount % shootInterval == 0) {
+				if (score != 0) {
+					score--;
+				}
 				bulletManager->ShootBullet();
 				shootcount = 0;
 			}
@@ -58,15 +86,17 @@ void GameScene::Update() {
 		}
 
 		bulletManager->Update();
-		// ========弾の範囲検知========
+
+		// ========弾の画面外検知========
 		bulletManager->OutBullet();
 
 		// ========敵生成========
 		spawnTimer += 1.0f / 60.0f;
 		// 特定の時間の時だけ特殊な敵を生成
-		if (elapsed.count() > 30000) {
+		if (elapsed.count() > 10000) {
 			enemyType = 1;
-			start = now; // タイマーをリセット（基準時間を更新）
+			// タイマーをリセット
+			start = now;
 		}
 		if (spawnTimer >= rand() % 5 + 1) {
 			spawnTimer = 0.0f;
@@ -83,36 +113,54 @@ void GameScene::Update() {
 		// ========キャラクター更新========
 		player->Update(input);
 
-		// ダメージエフェクトを赤から徐々に透明に戻す
-		if (bg->GetColor().w != 0.0f) {
-			bg->SetColor(1.0f, 0.0f, 0.0f, bg->GetColor().w - 0.01f);
-		}
-
 		// ========敵の更新========
-		for (auto& enemy : enemies) {
+		for (auto it = enemies.begin(); it != enemies.end();) {
+			auto& enemy = *it;
 			enemy->Update();
 			int state = enemy->GetState();
+
+			// 敵の弾発射
 			if (state == 1 && enemy->CanShoot()) {
 				bulletManager->EnemyShootBullet(enemy.get());
 				enemy->ResetCoolTime();
 			}
+
+			// 範囲外へ行くか体力がなくなると消す
+			if (enemy->GetDeadFlg() == true || enemy->GetPos().y > 500.0f) {
+				// スコア増加
+				score += (enemy->GetEnemyType() * 5 + 5) * 5;
+				// 敵が死亡している場合削除
+				it = enemies.erase(it);
+				std::cout << score << std::endl;
+			}
+			else {
+				// それ以外は次の要素に進む
+				++it;
+			}
 		}
-
-		// 削除フラグが立っている敵を削除
-		enemies.erase(std::remove_if(enemies.begin(), enemies.end(), [](const std::unique_ptr<Enemy>& enemy) {
-			return enemy->GetDeadFlg();
-			}),
-			enemies.end());
-
 
 		// ========死亡========
 		if (player->GetdeadFlg()) {
-			SceneManager::ChangeScene(SceneManager::RESULT);
+			player->SetVelocity(DirectX::SimpleMath::Vector3(0.0f,20.0f,0.0f));
+			state = 2;
 		}
 
-		// デバッグ
-		if (input.GetKeyTrigger(VK_3)) {
-			SceneManager::ChangeScene(SceneManager::RESULT);
+		// ========スコア表示用========
+		int tempScore = score;
+		for (int i = static_cast<int>(scoreNum.size()) - 1; i >= 0; i--) {
+			int digit = tempScore % 10;  // 右端の桁を取得
+			tempScore /= 10;			 // スコアを10で割って次の桁へ進む
+
+			// UVを桁の値に基づいて設定
+			scoreNum[i]->SetUV(digit, 0);
+		}
+	}
+
+	// =====================死亡アニメーション=====================
+	else if (state == 2) {
+		Outro();
+		if (player->GetPos().y < -400.0f) {
+			SceneManager::ChangeScene(SceneManager::RESULT, score);
 		}
 	}
 	// 負荷軽減
@@ -127,6 +175,10 @@ void GameScene::Draw() {
 		obj->Draw();
 	}
 	for (auto& obj : health) {
+		obj->Draw();
+	}
+	score_bg->Draw();
+	for (auto& obj : scoreNum) {
 		obj->Draw();
 	}
 	bg->Draw();
@@ -150,12 +202,11 @@ void GameScene::AddEnemy(const std::wstring& baseTexturePath, int enemyType) {
 	enemies.back()->Init(textureManager, texturePath.str().c_str());
 }
 
-
 void GameScene::RemoveEnemy(Enemy* enemy) {
 	if (!enemy) {
-		return;  // 無効なポインタは無視
+		return;
 	}
-	// 対象の敵をenemiesから探して削除
+	// 対象の敵を探して削除
 	enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
 		[enemy](const std::unique_ptr<Enemy>& e) {
 			return e.get() == enemy;
@@ -163,7 +214,6 @@ void GameScene::RemoveEnemy(Enemy* enemy) {
 		enemies.end());
 }
 
-// ダメージを受けたら
 void GameScene::TakeDamege() {
 	// 体力減らす
 	health.erase(health.end() - 1);
@@ -188,7 +238,7 @@ void GameScene::Intro() {
 			// UIの初期化
 			health.back()->Init(textureManager, L"asset/health.png");
 			// 位置設定
-			health.back()->SetPos(120.0f + healthval + (healthval % 10) * 15.0f, -300.0f - (healthval / 10) * 15.0f, 0.0f);
+			health.back()->SetPos(120.0f + healthval + (healthval % 10) * 14.0f, -280.0f - (healthval / 10) * 15.0f, 0.0f);
 			health.back()->SetSize(15.0f, 15.0f, 0.0f);
 			healthval++;
 		}
@@ -204,6 +254,6 @@ void GameScene::Intro() {
 	animcount++;
 }
 
-Player* GameScene::GetPlayer() {
-	return player;
+void GameScene::Outro() {
+	player->Outro();
 }

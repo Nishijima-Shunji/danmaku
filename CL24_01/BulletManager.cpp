@@ -90,7 +90,7 @@ void BulletManager::EnemyShootBullet(Enemy* enemy) {
 		enemybullet.back()->SetPos(t_pos.x, t_pos.y - 0.5f, t_pos.z);
 		break;
 	case 1:
-		int numBullets = 5; // ’e‚Ì”
+		int numBullets = rand() % 9 + 1; // ’e‚Ì”
 		float radius = 10.0f; // ‰~‚Ì”¼Œa
 		const float pi = 3.14159265358979323846f;
 
