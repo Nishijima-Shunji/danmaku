@@ -11,7 +11,7 @@ private:
 	int movementType = 0;	// ˆÚ“®•û–@@0:‚·‚®‚É~‚Ü‚é@1:ŠŠ‚é
 	float moveSpeed = 1.0f;	// ˆÚ“®‘¬“x
 	int health;				// HP
-	float radius = 10.0f;   // “–‚½‚è”»’è‚Ì”¼Œa
+	float radius = 8.0f;   // “–‚½‚è”»’è‚Ì”¼Œa
 	bool deadFlg = false;	// €–S‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©
 
 	DirectX::SimpleMath::Vector3 velocity = { 0.0f,0.0f,0.0f };

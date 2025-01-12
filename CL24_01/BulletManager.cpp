@@ -4,7 +4,7 @@
 
 BulletManager::BulletManager(GameScene* gamescene, std::vector<std::unique_ptr<Enemy>>& enemies, Player*& player, TextureManager* texturemanager)
 	: gamescene(gamescene), enemies(enemies), player(player), textureManager(texturemanager) {
-
+	sound.Init();
 }
 
 BulletManager::~BulletManager() {
@@ -31,6 +31,11 @@ void BulletManager::Update() {
 		}
 
 		if (hit) {
+			switch (rand() % 4) {
+			case 0: sound.Play(SOUND_LABEL_SEhit1); break;
+			case 1: sound.Play(SOUND_LABEL_SEhit2); break;
+			case 2: sound.Play(SOUND_LABEL_SEhit3); break;
+			}
 			// ’e‚ðíœ
 			bulletIt = bullet.erase(bulletIt);
 		}
@@ -76,6 +81,7 @@ void BulletManager::ShootBullet() {
 	// ƒvƒŒƒCƒ„[‚ÌÀ•W‚É¶¬
 	DirectX::XMFLOAT3 t_pos = player->GetPos();
 	bullet.back()->SetPos(t_pos.x, t_pos.y + 50.0f, t_pos.z);
+	bullet.back()->SetSize(30.0f, 30.0f, 0.0f);
 }
 
 void BulletManager::EnemyShootBullet(Enemy* enemy) {
@@ -88,6 +94,8 @@ void BulletManager::EnemyShootBullet(Enemy* enemy) {
 		// ’e‚Ì‰Šú‰»
 		enemybullet.back()->Init(textureManager, L"asset/enemybullet.png");
 		enemybullet.back()->SetPos(t_pos.x, t_pos.y - 0.5f, t_pos.z);
+		enemybullet.back()->SetSize(30.0f, 30.0f, 0.0f);
+
 		break;
 	case 1:
 		int numBullets = rand() % 9 + 1; // ’e‚Ì”
@@ -118,6 +126,9 @@ void BulletManager::EnemyShootBullet(Enemy* enemy) {
 
 			// ’e‚ÌˆÊ’u‚ð’†S‚©‚ç•úŽË‚³‚ê‚é‚æ‚¤‚ÉÝ’è
 			enemybullet.back()->SetTargetPos(t_pos);
+
+			enemybullet.back()->SetSize(30.0f, 30.0f, 0.0f);
+
 		}
 
 		break;

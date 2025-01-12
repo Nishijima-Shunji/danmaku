@@ -1,11 +1,12 @@
 #pragma once
 #include "BaseScene.h"
-
+#include "sound.h"
 
 class Game;
 class ResultScene : public BaseScene
 {
 private:
+    Sound sound;
     Object* result_bg;
     Object* button;
     Object* score_bg;

@@ -9,6 +9,9 @@
 std::chrono::high_resolution_clock::time_point start;
 
 GameScene::GameScene(int maxhp){
+	sound.Init();
+	sound.Play(SOUND_LABEL_BGM001);
+
 	textureManager = new TextureManager(g_pDevice);
 
 	// プレイヤーの生成
@@ -38,7 +41,6 @@ GameScene::GameScene(int maxhp){
 		scoreNum.back()->SetSize(25.0f, 25.0f, 0.0f);
 		scoreNum.back()->SetUV(0, 0);
 	}
-
 	bulletManager = new BulletManager(this, enemies, player, textureManager);
 }
 
@@ -81,6 +83,7 @@ void GameScene::Update() {
 				}
 				bulletManager->ShootBullet();
 				shootcount = 0;
+				sound.Play(SOUND_LABEL_SEthrow);
 			}
 			shootcount++;
 		}
@@ -143,6 +146,7 @@ void GameScene::Update() {
 		if (player->GetdeadFlg()) {
 			player->SetVelocity(DirectX::SimpleMath::Vector3(0.0f,20.0f,0.0f));
 			state = 2;
+			sound.Play(SOUND_LABEL_SE002);
 		}
 
 		// ========スコア表示用========
@@ -160,6 +164,7 @@ void GameScene::Update() {
 	else if (state == 2) {
 		Outro();
 		if (player->GetPos().y < -400.0f) {
+			sound.Stop(SOUND_LABEL_BGM001);
 			SceneManager::ChangeScene(SceneManager::RESULT, score);
 		}
 	}

@@ -1,6 +1,7 @@
 #pragma once
 #include "GameScene.h"
 #include "Bullet.h"
+#include "sound.h"
 
 class GameScene;
 class Player;
@@ -9,6 +10,7 @@ class Enemy;
 class BulletManager
 {
 private:
+    Sound sound;
     TextureManager* textureManager;
     // ‰¼Ši”[
     std::vector<std::unique_ptr<Enemy>>& enemies;

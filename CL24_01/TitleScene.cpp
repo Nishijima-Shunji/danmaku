@@ -5,11 +5,14 @@
 TitleScene::TitleScene() {
 	TextureManager* textureManager = new TextureManager(g_pDevice);
 
+	sound.Init();
+	sound.Play(SOUND_LABEL_BGM000);	//BGMを再生
+
 	title_bg = new Object;  // オブジェクト生成
-	title_bg->Init(textureManager, L"asset/Gamebg.png");
-	title_bg->SetPos(0.0f, 0.0f, 0.0f);	//位置を設定
-	title_bg->SetSize(1280.0f, 720.0f, 0.0f);	//大きさを設定
-	title_bg->SetColor(0.0f, 0.0f, 0.0f, 1.0f);	//色を設定
+	title_bg->Init(textureManager, L"asset/title.png");
+	title_bg->SetPos(0.0f, 50.0f, 0.0f);	//位置を設定
+	title_bg->SetSize(800.0f, 800.0f, 0.0f);	//大きさを設定
+	title_bg->SetColor(1.0f, 1.0f, 1.0f, 1.0f);	//色を設定
 
 	button = new Object;
 	button->Init(textureManager, L"asset/Enter.png");
@@ -70,6 +73,7 @@ void TitleScene::Update() {
 		}
 		if (input.GetKeyTrigger(VK_RETURN)) {
 			state = 1;
+			sound.Play(SOUND_LABEL_SE001);
 		}
 	}
 	if (state == 1) {
@@ -77,6 +81,7 @@ void TitleScene::Update() {
 		button->SetColor(1.0f, 1.0f, 1.0f, button->GetColor().w - 0.01f);
 
 		if (title_bg->GetColor().w <= 0.0f) {
+			sound.Stop(SOUND_LABEL_BGM000);
 			SceneManager::ChangeScene(SceneManager::GAME, maxhp);	//シーンをGAMEへ移行
 		}
 	}

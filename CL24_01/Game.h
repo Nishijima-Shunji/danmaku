@@ -1,7 +1,7 @@
 #pragma once
 #include "Object.h"
 #include "input.h"
-#include "Sound.h"
+#include "sound.h"
 #include "SceneManager.h"
 
 class Game
@@ -12,6 +12,7 @@ private:
 	SceneManager sm;
 	
 public:
+
 	void Init(HWND hWnd);
 	void Draw();
 	void Uninit();

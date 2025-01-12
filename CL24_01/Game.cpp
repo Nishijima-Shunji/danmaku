@@ -7,9 +7,8 @@ void Game::Init(HWND hWnd) {
 	srand((unsigned)time(NULL));
 
 	D3D_Create(hWnd);
+	sound.Init();	//サウンドを初期化
 
-	//sound.Init();	//サウンドを初期化
-	//sound.Play(SOUND_LABEL_BGM000);	//BGMを再生
 
 	//初期シーンをタイトルにする
 	sm.ChangeScene(sm.TITLE);
@@ -24,8 +23,8 @@ void Game::Draw() {
 }
 
 void Game::Uninit() {
-	//sound.Uninit();			//サウンドを終了
-	// 
+	
+	sound.Uninit();
 	// DirectXの解放処理
 	D3D_Release();
 }

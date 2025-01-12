@@ -4,6 +4,7 @@
 #include "BulletManager.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "Sound.h"
 
 #define MAP_WIDTH (560)	// ウインドウの幅
 #define MAP_HEIGHT (720)	// ウインドウの高さ
@@ -15,6 +16,7 @@ class Enemy;
 class GameScene : public BaseScene
 {
 private:
+    Sound sound;
     TextureManager* textureManager;     // テクスチャ管理の呼び出し
     BulletManager* bulletManager;       // 弾の管理の呼び出し
 

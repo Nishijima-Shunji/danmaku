@@ -3,12 +3,14 @@
 #include <cmath>
 
 ResultScene::ResultScene(int score) : score(score) {
+	sound.Init();
 	TextureManager* textureManager = new TextureManager(g_pDevice);
 
 	result_bg = new Object;
 	result_bg->Init(textureManager, L"asset/Result.png");
 	result_bg->SetPos(0.0f, 0.0f, 0.0f);			//ˆÊ’u
 	result_bg->SetSize(800.0f, 600.0f, 0.0f);		//‘å‚«‚³
+	result_bg->SetColor(0.8f, 0.8f, 0.8f, 1.0f);
 
 	button = new Object;
 	button->Init(textureManager, L"asset/Enter.png");
